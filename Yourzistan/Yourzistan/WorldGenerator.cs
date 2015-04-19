@@ -12,7 +12,7 @@ static class WorldGenerator
     public static Color USSR_COLOR = Color.Red;
     public static Color YOURZISTAN = Color.Blue;
 
-    public static void GenMap(int numberOfOtherCountries, double gridCellSize, ref GameObject[,] cells)
+    public static void GenMap(int numberOfOtherCountries, int bigCountryThickness, double gridCellSize, ref GameObject[,] cells)
     {
         int MAP_WIDTH = cells.GetLength(0);
         int MAP_HEIGHT = cells.GetLength(1);
@@ -51,17 +51,24 @@ static class WorldGenerator
         // 1. Outside is USSR
         for (int x = 0; x < MAP_WIDTH; x++)
         {
-            cells[x, 0].Color = USSR_COLOR; //TODO: Translucient
-            //TODO: Set the contry to the tag 
-            cells[x, MAP_HEIGHT - 1].Color = USSR_COLOR; //TODO: Translucient
+            for (int y = 0; y < bigCountryThickness; y++)
+            {
+                cells[x, y].Color = USSR_COLOR; //TODO: Translucient
+                //TODO: Set the contry to the tag 
+                cells[x, MAP_HEIGHT - 1 - y].Color = USSR_COLOR; //TODO: Translucient
+                freeCellCnt -= 2;
+            }
         }
-        for (int y = 1; y < MAP_HEIGHT - 1; y++)
+        for (int y = bigCountryThickness; y < MAP_HEIGHT - bigCountryThickness; y++)
         {
-            cells[0, y].Color = USSR_COLOR; //TODO: Translucient
-            //TODO: Set the contry to the tag 
-            cells[MAP_WIDTH - 1, y].Color = USSR_COLOR; //TODO: Translucient
+            for (int x = 0; x < bigCountryThickness; x++)
+            {
+                cells[x, y].Color = USSR_COLOR; //TODO: Translucient
+                //TODO: Set the contry to the tag 
+                cells[MAP_WIDTH - 1 - x, y].Color = USSR_COLOR; //TODO: Translucient
+                freeCellCnt -= 2;
+            }
         }
-        freeCellCnt -= MAP_WIDTH * 2 + (MAP_HEIGHT - 2) * 2;
 
         // 2. You are at the center
         cells[MAP_WIDTH / 2, MAP_HEIGHT / 2].Color = YOURZISTAN;
@@ -87,8 +94,10 @@ static class WorldGenerator
         }
 
         // Evolve
+        bool foundWhite = false;
         do
         {
+            foundWhite = false;
             List<Tuple<int, int, Color>> toFill = new List<Tuple<int, int, Color>>();
             for (int x = 1; x < MAP_WIDTH - 1; x++)
             {
@@ -97,6 +106,7 @@ static class WorldGenerator
                     // Free to fill
                     if (cells[x, y].Color == Color.White)
                     {
+                        foundWhite = true;
                         List<Color> nearbyColors = new List<Color>();
                         for (int dx = -1; dx < 2; dx++)
                         {
@@ -129,7 +139,7 @@ static class WorldGenerator
                     freeCellCnt--;
                 }
             }
-        } while (freeCellCnt > 0);
+        } while (foundWhite);
     }
 
 }

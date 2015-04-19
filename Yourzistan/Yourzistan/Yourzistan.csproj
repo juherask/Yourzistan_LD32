@@ -110,6 +110,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Area.cs" />
     <Compile Include="WorldGenerator.cs" />
     <Compile Include="Yourzistan.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -120,6 +121,10 @@
     <Content Include="GameThumbnail.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DotFuzzy\DotFuzzy.csproj">
+      <Project>{6b1e0ce9-725e-477f-938c-625a25dbce70}</Project>
+      <Name>DotFuzzy</Name>
+    </ProjectReference>
     <ProjectReference Include="..\YourzistanContent\YourzistanContent.contentproj">
       <Name>YourzistanContent</Name>
       <XnaReferenceType>Content</XnaReferenceType>

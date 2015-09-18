@@ -5,7 +5,7 @@ using Jypeli.Assets;
 using Jypeli.Controls;
 using Jypeli.Widgets;
 using System.Linq;
-using DotFuzzy;
+
 
 public class Yourzistan : Game
 {
@@ -45,8 +45,13 @@ public class Yourzistan : Game
         Mouse.ListenMovement(0.01, OnMouseMove, "Move mouse and click a region");
         Mouse.Listen(MouseButton.Right, ButtonState.Down, OnContextMenuRequested, "Click right to make actions");
         Mouse.Listen(MouseButton.Left, ButtonState.Down, OnAreaInfoRequested, "Click left to make actions");
-        Keyboard.Listen(Key.Space, ButtonState.Pressed, BuildCellModel, "DEBUG!");
+        //Keyboard.Listen(Key.Space, ButtonState.Pressed, BuildCellModel, "DEBUG!");
     }
+
+    //void BuildCellModel
+    //{
+    //    MessageDisplay.Add( Area.BuildCellModel() )
+    //}
 
     void OnAreaInfoRequested()
     {
@@ -96,44 +101,6 @@ public class Yourzistan : Game
             
             Add(alkuValikko);
         }
-    }
-
-    void BuildCellModel()
-    {
-        LinguisticVariable nourishment = new LinguisticVariable("Nourishment");
-        nourishment.MembershipFunctionCollection.Add(new MembershipFunction("Hungry", 0, 0, 20, 40));
-        nourishment.MembershipFunctionCollection.Add(new MembershipFunction("Nominal", 30, 50, 50, 70));
-        nourishment.MembershipFunctionCollection.Add(new MembershipFunction("Bloated", 50, 80, 100, 100));
-        
-        LinguisticVariable peacefulness = new LinguisticVariable("Peacefulness");
-        peacefulness.MembershipFunctionCollection.Add(new MembershipFunction("Low", 0, 0, 25, 75));
-        peacefulness.MembershipFunctionCollection.Add(new MembershipFunction("High", 25, 75, 100, 100));
-
-        LinguisticVariable mood = new LinguisticVariable("Mood");
-        mood.MembershipFunctionCollection.Add(new MembershipFunction("Angry", 0, 0, 10, 20));
-        mood.MembershipFunctionCollection.Add(new MembershipFunction("Pissed", 10, 20, 40, 50));
-        mood.MembershipFunctionCollection.Add(new MembershipFunction("OK", 40, 50, 70, 80));
-        mood.MembershipFunctionCollection.Add(new MembershipFunction("Happy", 70, 80, 100, 100));
-
-        FuzzyEngine fuzzyEngine = new FuzzyEngine();
-        fuzzyEngine.LinguisticVariableCollection.Add(nourishment);
-        fuzzyEngine.LinguisticVariableCollection.Add(peacefulness);
-        fuzzyEngine.LinguisticVariableCollection.Add(mood);
-
-        fuzzyEngine.Consequent = "Mood";
-        
-        fuzzyEngine.FuzzyRuleCollection.Add(new FuzzyRule("IF (Nourishment IS Bloated) AND (Peacefulness IS Low) THEN Mood IS Pissed"));
-        fuzzyEngine.FuzzyRuleCollection.Add(new FuzzyRule("IF (Nourishment IS Bloated) AND (Peacefulness IS High) THEN Mood IS OK"));
-        fuzzyEngine.FuzzyRuleCollection.Add(new FuzzyRule("IF (Nourishment IS Nominal) AND (Peacefulness IS Low) THEN Mood IS Angry"));
-        fuzzyEngine.FuzzyRuleCollection.Add(new FuzzyRule("IF (Nourishment IS Nominal) AND (Peacefulness IS High) THEN Mood IS Happy"));
-        fuzzyEngine.FuzzyRuleCollection.Add(new FuzzyRule("IF (Nourishment IS Hungry) THEN Mood IS Angry"));
-
-        nourishment.InputValue = 5;
-        peacefulness.InputValue = 80;
-
-        double angryness = fuzzyEngine.Defuzzify();
-        mood.InputValue = angryness;
-        MessageDisplay.Add(mood.Fuzzify() + " (" + angryness.ToString() +")");
     }
 
     void OnMouseMove(AnalogState anaSt)

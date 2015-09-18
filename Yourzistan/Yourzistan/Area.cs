@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using Jypeli;
+using DotFuzzy;
 
 class Area
 {
@@ -30,6 +31,57 @@ class Area
     public double Shelter { get; set; }
     public double Trust { get; set; }
     public double Safety { get; set; }
+
+    static public string BuildCellModel()
+    {
+        LinguisticVariable nourishment = new LinguisticVariable("Nourishment");
+        nourishment.MembershipFunctionCollection.Add(new MembershipFunction("Hungry", 0, 0, 20, 40));
+        nourishment.MembershipFunctionCollection.Add(new MembershipFunction("Nominal", 30, 50, 50, 70));
+        nourishment.MembershipFunctionCollection.Add(new MembershipFunction("Bloated", 50, 80, 100, 100));
+
+        LinguisticVariable health = new LinguisticVariable("Health");
+        health.MembershipFunctionCollection.Add(new MembershipFunction("Sick", 0, 0, 10, 20));
+        health.MembershipFunctionCollection.Add(new MembershipFunction("Functional", 10, 20, 40, 50));
+        health.MembershipFunctionCollection.Add(new MembershipFunction("Healthy", 40, 50, 70, 80));
+        health.MembershipFunctionCollection.Add(new MembershipFunction("Sporty", 70, 80, 100, 100));
+
+        LinguisticVariable shelter = new LinguisticVariable("Shelter");
+        shelter.MembershipFunctionCollection.Add(new MembershipFunction("Shacks", 0, 0, 10, 20));
+        shelter.MembershipFunctionCollection.Add(new MembershipFunction("Barebones", 10, 20, 40, 50));
+        shelter.MembershipFunctionCollection.Add(new MembershipFunction("Confortable", 40, 50, 70, 80));
+        shelter.MembershipFunctionCollection.Add(new MembershipFunction("Luxorious", 70, 80, 100, 100));
+
+        LinguisticVariable trust = new LinguisticVariable("Trust");
+        trust.MembershipFunctionCollection.Add(new MembershipFunction("Hate", 0, 0, 20, 40));
+        trust.MembershipFunctionCollection.Add(new MembershipFunction("Meh", 30, 50, 50, 70));
+        trust.MembershipFunctionCollection.Add(new MembershipFunction("Awe", 50, 80, 100, 100));
+
+        LinguisticVariable mood = new LinguisticVariable("Mood");
+        mood.MembershipFunctionCollection.Add(new MembershipFunction("Angry", 0, 0, 10, 20));
+        mood.MembershipFunctionCollection.Add(new MembershipFunction("Pissed", 10, 20, 40, 50));
+        mood.MembershipFunctionCollection.Add(new MembershipFunction("OK", 40, 50, 70, 80));
+        mood.MembershipFunctionCollection.Add(new MembershipFunction("Happy", 70, 80, 100, 100));
+
+        FuzzyEngine fuzzyEngine = new FuzzyEngine();
+        fuzzyEngine.LinguisticVariableCollection.Add(nourishment);
+        //fuzzyEngine.LinguisticVariableCollection.Add(peacefulness);
+        fuzzyEngine.LinguisticVariableCollection.Add(mood);
+
+        fuzzyEngine.Consequent = "Mood";
+
+        fuzzyEngine.FuzzyRuleCollection.Add(new FuzzyRule("IF (Nourishment IS Bloated) AND (Peacefulness IS Low) THEN Mood IS Pissed"));
+        fuzzyEngine.FuzzyRuleCollection.Add(new FuzzyRule("IF (Nourishment IS Bloated) AND (Peacefulness IS High) THEN Mood IS OK"));
+        fuzzyEngine.FuzzyRuleCollection.Add(new FuzzyRule("IF (Nourishment IS Nominal) AND (Peacefulness IS Low) THEN Mood IS Angry"));
+        fuzzyEngine.FuzzyRuleCollection.Add(new FuzzyRule("IF (Nourishment IS Nominal) AND (Peacefulness IS High) THEN Mood IS Happy"));
+        fuzzyEngine.FuzzyRuleCollection.Add(new FuzzyRule("IF (Nourishment IS Hungry) THEN Mood IS Angry"));
+
+        nourishment.InputValue = 5;
+        //peacefulness.InputValue = 80;
+
+        double angryness = fuzzyEngine.Defuzzify();
+        mood.InputValue = angryness;
+        return mood.Fuzzify() + " (" + angryness.ToString() + ")";
+    }
 
     // Init with every property at 50 with in built randomness (uniform)
     public Area(double randomnessRange)
